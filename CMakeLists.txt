@@ -19,6 +19,28 @@ endif()
 # Include directories
 include_directories(irsdk_1_19)
 include_directories(irsdk_1_19/irsdk_ir2ad)
+include_directories(imgui-docking)
+include_directories(imgui-docking/backends)
+
+# ImGui source files
+set(IMGUI_SOURCES
+    imgui-docking/imgui.cpp
+    imgui-docking/imgui_demo.cpp
+    imgui-docking/imgui_draw.cpp
+    imgui-docking/imgui_tables.cpp
+    imgui-docking/imgui_widgets.cpp
+    imgui-docking/backends/imgui_impl_win32.cpp
+    imgui-docking/backends/imgui_impl_dx11.cpp
+)
+
+# ImGui header files
+set(IMGUI_HEADERS
+    imgui-docking/imgui.h
+    imgui-docking/imgui_internal.h
+    imgui-docking/imconfig.h
+    imgui-docking/backends/imgui_impl_win32.h
+    imgui-docking/backends/imgui_impl_dx11.h
+)
 
 # Source files for the iRSDK library
 set(IRSDK_SOURCES
@@ -39,11 +61,16 @@ set(IRSDK_HEADERS
 )
 
 # Create executable
-add_executable(yaio yaio.cpp ${IRSDK_SOURCES} ${IRSDK_HEADERS})
+add_executable(yaio yaio.cpp ${IRSDK_SOURCES} ${IRSDK_HEADERS} ${IMGUI_SOURCES} ${IMGUI_HEADERS})
 
 # Link libraries
 if(WIN32)
-    target_link_libraries(yaio Winmm)
+    target_link_libraries(yaio 
+        Winmm
+        d3d11
+        dxgi
+        d3dcompiler
+    )
 endif()
 
 # Set output directory
@@ -55,5 +82,7 @@ set_target_properties(yaio PROPERTIES
 if(MSVC)
     source_group("iRSDK Sources" FILES ${IRSDK_SOURCES})
     source_group("iRSDK Headers" FILES ${IRSDK_HEADERS})
+    source_group("ImGui Sources" FILES ${IMGUI_SOURCES})
+    source_group("ImGui Headers" FILES ${IMGUI_HEADERS})
     source_group("Main" FILES yaio.cpp)
 endif()
